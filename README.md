@@ -5,13 +5,13 @@
 ## Screenshots
 
 **3D Donut (rendered using Canvas and animated in Lisp)**  
-![3D Donut](lisp-interpreter-js-donut.gif)
+![3D Donut](screenshots/lisp-interpreter-js-donut.gif)
 
 **Rotating Cube**  
-![Cube](lisp-interpreter-js-cube.gif)
+![Cube](screenshots/lisp-interpreter-js-cube.gif)
 
 **Canvas Drawing with Lisp Expressions**  
-![Canvas Drawing](lisp-interpreter-js.gif)
+![Canvas Drawing](screenshots/lisp-interpreter-js.gif)
 
 ## Features
 
