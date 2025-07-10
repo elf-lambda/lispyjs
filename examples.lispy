@@ -1,0 +1,270 @@
+;; lispy.js - snippets
+
+;; ------------------------------------------------------------------------------------
+
+(define circle-area (lambda (r) (* pi (* r r))))
+(print (circle-area (+ 5 5))))
+
+(define fib (lambda (n) (if (< n 2) 1 (+ (fib (- n 1)) (fib (- n 2))))))
+(define range (lambda (a b) (if (= a b) (quote ()) (cons a (range (+ a 1) b)))))
+(map fib (range 0 10))
+
+;; ------------------------------------------------------------------------------------
+
+;; Draw 2 Squares
+
+(clear-canvas)
+
+(set-fill-style "#f38ba8")
+(fill-rect 20 20 100 100)
+
+(set-stroke-style "#89b4fa") 
+(stroke-rect 150 50 80 120)
+
+;; ------------------------------------------------------------------------------------
+
+;; Moving Square
+
+(clear-canvas)
+
+(define x 0)
+(define cut-off (/ (get-canvas-width) 2))
+
+(define draw
+  (lambda ()
+    (clear-canvas)
+    (set-fill-style "blue")
+    (fill-rect x 50 50 50)
+    (set! x (+ x 5))
+    (if (< x cut-off)
+        (request-animation-frame draw))))
+
+(draw)
+
+;; ------------------------------------------------------------------------------------
+
+;; 3D Cube
+
+ ;; Create vertices using simple arrays
+(define vertices 
+  (make-simple-array
+    (make-point -1 1 -1)
+    (make-point 1 1 -1)
+    (make-point 1 -1 -1)
+    (make-point -1 -1 -1)
+    (make-point -1 1 1)
+    (make-point 1 1 1)
+    (make-point 1 -1 1)
+    (make-point -1 -1 1)))
+
+;; Define cube faces (indices into vertices array)
+(define faces
+  (make-simple-array
+    (make-simple-array 0 1 2 3)
+    (make-simple-array 1 5 6 2)
+    (make-simple-array 5 4 7 6)
+    (make-simple-array 4 0 3 7)
+    (make-simple-array 0 4 5 1)
+    (make-simple-array 3 2 6 7)))
+
+;; Screen settings
+;(define screen-w 300)
+;(define screen-h 300)
+
+(define screen-w  600)
+(define screen-h  600)
+
+;; Animation state
+(define current-angle 0)
+
+;; Transform a single vertex
+(define (transform-vertex vertex angle)
+  (project-point
+    (rotate-z
+      (rotate-y
+        (rotate-x vertex angle)
+        angle)
+      angle)
+    screen-h screen-w 128 3))
+
+;; Transform all vertices
+(define (transform-vertices vertices angle)
+  (array-map (lambda (vertex) (transform-vertex vertex angle)) vertices))
+
+;; Draw one face
+(define (draw-face points face)
+  (let ((p0 (array-ref points (array-ref face 0)))
+        (p1 (array-ref points (array-ref face 1)))
+        (p2 (array-ref points (array-ref face 2)))
+        (p3 (array-ref points (array-ref face 3))))
+    (begin
+      (beginPath)
+      (moveTo (point-x p0) (point-y p0))
+      (lineTo (point-x p1) (point-y p1))
+      (lineTo (point-x p2) (point-y p2))
+      (lineTo (point-x p3) (point-y p3))
+      (closePath)
+      (stroke))))
+
+;; Draw all faces
+(define (draw-faces points faces)
+  (array-for-each (lambda (face) (draw-face points face)) faces))
+
+;; Main render loop
+(define (render)
+  (begin
+    ;; Clear canvas
+    (fill-rect 0 0 screen-w screen-h)
+    
+    ;; Transform vertices
+    (define transformed (transform-vertices vertices current-angle))
+    
+    ;; Draw faces
+    (draw-faces transformed faces)
+    
+    ;; Update angle
+    (set! current-angle (+ current-angle 2))
+    
+    ;; Next frame
+    (request-animation-frame render)))
+
+;; Initialize and start
+(define (start)
+  (begin
+    (set-fill-style "black")
+    (set-stroke-style "rgb(255,255,200)")
+    (render)))
+
+(start)
+
+
+;; ------------------------------------------------------------------------------------
+
+;; Colorful Spiral
+
+(resize-canvas)
+(clear-canvas)
+
+; Parameters for the spiral
+(define t 0)
+(define center-x (/ (get-canvas-width) 2))
+(define center-y (/ (get-canvas-height) 2))
+(define max-radius 150)
+(define num-points 300)
+
+(define color
+(lambda (angle)
+    (string-append 
+    "hsl(" 
+    (number->string (modulo (* angle 10) 360)) 
+    ",100%,60%)")))
+
+; Main animation function
+(define draw
+(lambda ()
+   (begin
+    ; Clear with slight transparency for trail effect
+    (set-fill-style "rgba(0,0,0,0.03)")
+    (fill-rect 0 0 (get-canvas-width) (get-canvas-height))
+    
+    ; Draw spiral points
+    (for-each
+        (lambda (i)
+            (begin
+            ; Calculate spiral parameters
+            (define angle (+ (* i 0.1) t))
+            (define radius (* max-radius (/ i num-points)))
+            (define x (+ center-x (* radius (cos angle))))
+            (define y (+ center-y (* radius (sin angle))))
+            
+            ; Calculate size and color
+            (define size (+ 3 (* 2 (sin (+ t (* i 0.05))))))
+            (set-fill-style (color (+ angle t)))
+            
+            ; Draw the point
+            (fill-rect x y size size)
+            (set-fill-style "#ffffff")
+            (fill-rect (- x 1) (- y 1) 1 1)))
+        (range 0 num-points))
+    
+    ; Update time
+    (set! t (+ t 0.05))
+    
+    (request-animation-frame draw))))
+
+(draw)
+
+;; ------------------------------------------------------------------------------------
+
+;; Halo Donut
+
+(resize-canvas)
+(clear-canvas)
+
+; Canvas center 
+(define center-x (/ (get-canvas-width) 2)) (define center-y (/ (get-canvas-height) 2))
+
+; Torus parameters 
+(define R 100) 
+; Major radius 
+(define r 30) 
+; Minor radius 
+(define t 0) 
+; Time for animation 
+(define num-theta 50) 
+; Points along major circle 
+(define num-phi 30) 
+; Points along minor circle 
+(define d 600) 
+; Distance to viewer for perspective
+
+; Color function using HSL 
+(define color (lambda (z angle) (string-append "hsl(" (number->string (modulo (* angle 5) 360)) ",80%," (number->string (+ 40 (* 20 (/ (+ z 200) 400)))) "%)")))
+
+; Main animation function 
+(define draw (lambda () (begin 
+; Fade background 
+(set-fill-style "rgba(0,0,0,0.05)") (fill-rect 0 0 (get-canvas-width) (get-canvas-height))
+
+    ; Generate torus points
+    (for-each
+      (lambda (i)
+        (for-each
+          (lambda (j)
+            (begin
+              ; Parametric angles
+              (define theta (* 2 pi (/ i num-theta)))
+              (define phi (* 2 pi (/ j num-phi)))
+              
+              ; 3D coordinates
+              (define x0 (+ (* R (cos theta)) (* r (cos theta) (cos phi))))
+              (define y0 (* r (sin phi)))
+              (define z0 (+ (* R (sin theta)) (* r (sin theta) (cos phi))))
+              
+              ; Rotate around Y-axis
+              (define x1 (* x0 (cos t)))
+              (define z1 (+ (* x0 (sin t)) (* z0 (cos t))))
+              (define y1 y0)
+              
+              ; Rotate around X-axis
+              (define z2 (+ (* z1 (cos (* t 0.7))) (* y1 (sin (* t 0.7)))))
+              (define y2 (+ (* z1 (sin (* t 0.7))) (* y1 (cos (* t 0.7)))))
+              (define x3 x1)
+              
+              ; Perspective projection
+              (define scale (/ d (+ z2 d)))
+              (define x (+ center-x (* scale x3)))
+              (define y (+ center-y (* scale y2)))
+              
+              ; Draw point
+              (set-fill-style (color z2 theta))
+              (fill-rect x y 3 3)))
+          (range 0 num-phi)))
+      (range 0 num-theta))
+    
+    ; Update time
+    (set! t (+ t 0.02))
+    
+    (request-animation-frame draw))))
+
+(draw)

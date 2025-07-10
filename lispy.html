@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Lisp REPL</title>
+    <link rel="stylesheet" href="lisp-style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Lisp Interpreter</h1>
+        <div class="repl-container">
+            <div class="repl-column">
+                <div class="input-section">
+                    <label for="input">Input:</label>
+                    <textarea id="input"
+                        placeholder="(set-fill-style &#34;cyan&#34;)&#10;(fill-rect 10 10 150 80)"></textarea>
+                </div>
+                <div class="output-section">
+                    <label>Output:</label>
+                    <div id="output"></div>
+                </div>
+            </div>
+            <div class="canvas-section">
+                <canvas id="myCanvas"></canvas>
+            </div>
+        </div>
+        <div class="button-section">
+            <button onclick="evaluate_exp()" class="eval-btn">Evaluate</button>
+            <button onclick="clearOutput()" class="clear-btn">Clear</button>
+        </div>
+    </div>
+
+
+    <script src="lispy.js"></script>
+    <script>
+        const input = document.getElementById("input");
+
+        input.addEventListener("input", function (e) {
+            if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                evaluate_exp();
+            }
+        });
+    </script>
+
+</body>
+
+</html>

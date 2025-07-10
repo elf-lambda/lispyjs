@@ -1,0 +1,164 @@
+/* lisp-style.css */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    height: 100%;
+    overflow: hidden;
+    /* Prevent scrolling */
+}
+
+body {
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    background: linear-gradient(135deg, #1e1e2e 0%, #2d2d44 100%);
+    color: #cdd6f4;
+    padding: 20px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    background: rgba(30, 30, 46, 0.95);
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(205, 214, 244, 0.1);
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+h1 {
+    color: #cba6f7;
+    margin-bottom: 20px;
+    font-size: 2em;
+    font-weight: 300;
+    text-shadow: 0 0 20px rgba(203, 166, 247, 0.3);
+    text-align: center;
+}
+
+.repl-container {
+    display: flex;
+    flex: 1;
+    gap: 20px;
+    height: calc(100% - 40px);
+    /* Account for button height */
+}
+
+.repl-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    /* Allow shrinking */
+}
+
+.canvas-section {
+    flex: 1.5;
+    /* 60% width */
+    min-width: 0;
+}
+
+.input-section,
+.output-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+#input,
+#output {
+    flex: 1;
+    background: #11111b;
+    border: 2px solid #313244;
+    border-radius: 10px;
+    padding: 15px;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 14px;
+    color: #cdd6f4;
+    min-height: 100px;
+    overflow: auto;
+}
+
+#myCanvas {
+    /* transform: translate(200px, 120px) scale(5, 5); */
+    /* transform: scale(1, 1); */
+    image-rendering: optimizeQuality;
+    max-width: 100%;
+    height: 100%;
+    background: #11111b;
+    border: 2px solid #313244;
+    border-radius: 10px;
+}
+
+label {
+    color: #89b4fa;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.button-section {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.eval-btn,
+.clear-btn {
+    background: linear-gradient(135deg, #cba6f7 0%, #89b4fa 100%);
+    color: #11111b;
+    border: none;
+    padding: 10px 25px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(203, 166, 247, 0.3);
+}
+
+.clear-btn {
+    background: linear-gradient(135deg, #f38ba8 0%, #fab387 100%);
+}
+
+.input-line {
+    color: #89b4fa;
+}
+
+.output-line {
+    color: #a6e3a1;
+}
+
+.error-line {
+    color: #f38ba8;
+}
+
+@media (max-width: 768px) {
+    .repl-container {
+        flex-direction: column;
+    }
+
+    .canvas-section {
+        flex: 1.5;
+        min-height: 300px;
+    }
+
+    h1 {
+        font-size: 1.8em;
+    }
+
+    .button-section {
+        flex-wrap: wrap;
+    }
+}
